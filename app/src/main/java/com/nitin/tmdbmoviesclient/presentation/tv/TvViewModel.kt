@@ -15,7 +15,7 @@ private val updateTVShowUseCase: UpdateTVShowUseCase): ViewModel() {
     }
 
     fun updateTvShows() = liveData {
-        val tvshowList = getTVShowUseCase.execute()
+        val tvshowList = updateTVShowUseCase.execute()
         emit(tvshowList)
     }
 }
