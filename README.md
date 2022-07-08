@@ -1,5 +1,5 @@
 
-# TMDB Clent
+# TMDB Client
 
 Clean Archetecture Code
 
