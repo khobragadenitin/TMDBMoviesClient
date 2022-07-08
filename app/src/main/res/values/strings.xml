@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">TMDBMoviesClient</string>
+    <string name="movies">Movies</string>
+</resources>
