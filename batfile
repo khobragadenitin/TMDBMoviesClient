@@ -1,0 +1,70 @@
+@echo off
+setlocal enabledelayedexpansion
+
+:: Get the current directory
+set CURRENT_PATH=%~dp0
+
+:: Remove trailing backslash
+set CURRENT_PATH=%CURRENT_PATH:~0,-1%
+
+:: Display the current path
+::echo Current Path: %CURRENT_PATH%
+
+:: Replace backslashes with forward slashes
+set "wslPath=%CURRENT_PATH:\=/%
+
+:: Remove the drive letter and colon, replace with /mnt/<drive letter>
+set "driveLetter=%wslPath:~0,1%"
+
+:: Convert the character to lowercase
+for %%i in ("A=C" "B=D" "C=c" "D=d" "E=e" "F=f" "G=g" "H=h" "I=i" "J=j" "K=k" "L=l" "M=m" "N=n" "O=o" "P=p" "Q=q" "R=r" "S=s" "T=t" "U=u" "V=v" "W=w" "X=x" "Y=y" "Z=z") do (
+    for /f "tokens=1,2 delims==" %%a in (%%i) do (
+        if "%driveLetter%"=="%%a" (
+            set "CHARACTER=%%b"
+        )
+    )
+)
+
+echo Lowercase character: %CHARACTER%
+
+set "wslPath=/mnt/%CHARACTER%%wslPath:~2%"
+
+:: Display the converted path
+echo %wslPath%
+
+:: Check for administrator permissions
+net session >nul 2>&1
+if %errorlevel% neq 0 (
+    :: Prompt for elevation
+    echo Set UAC = CreateObject^("Shell.Application"^) > "%temp%\getadmin.vbs"
+    echo UAC.ShellExecute "cmd.exe", "/c ""%~0""", "", "runas", 1 >> "%temp%\getadmin.vbs"
+    "%temp%\getadmin.vbs"
+    exit /b
+)
+
+echo Running whoami in WSL...
+
+:: Run whoami command in WSL and capture the output
+for /f "tokens=* delims=" %%i in ('wsl whoami') do set "whoami_result=%%i"
+
+:: Display the result
+echo The WSL whoami result is: %whoami_result%
+
+:: Run cp command in WSL to copy the file
+echo Copying file from Windows to WSL...
+wsl cp %wslPath%/springDemo.zip /home/%whoami_result%/
+
+
+:: Check if the file was copied successfully
+if %errorlevel% neq 0 (
+    echo Failed to copy the file to WSL.
+    pause
+    exit /b
+)
+
+
+echo Copied Success
+
+
+
+pause
